@@ -1,5 +1,10 @@
-def create_tasks(task: schema.TaskCreate, db: Session):
-    db_task=model.Task(
+from app.schema import TaskCreate
+from app.schema import TaskUpdate
+from app.model import Task
+from sqlalchemy.orm import Session 
+
+def create_tasks(task: TaskCreate, db: Session):
+    db_task=Task(
         title=task.title,
         description=task.description,
         completed=task.completed,
@@ -11,7 +16,27 @@ def create_tasks(task: schema.TaskCreate, db: Session):
     return db_task
 
 def get_tasks(db: Session):
-    return db.query(model.Task).all()
+    return db.query(Task).all()
 
 def get_task(task_id: int, db: Session):
-    return db.query(model.Task).filter(model.Task.id == task_id)
+    return db.query(Task).filter(Task.id == task_id).first()
+
+def update_task(task_id: int, task: TaskUpdate, db: Session):
+    db_existing_task=get_task(task_id,db)
+    if not db_existing_task:
+        return None
+    db_existing_task.title = task.title
+    db_existing_task.description = task.description
+    db_existing_task.priority = task.priority
+    db_existing_task.completed = task.completed
+    db.commit()
+    db.refresh(db_existing_task)
+    return db_existing_task
+
+def delete_task(task_id:int,db:Session):
+    db_task=get_task(task_id,db)
+    if not db_task:
+        return None
+    db.delete(db_task)
+    db.commit()
+    return db_task
