@@ -25,10 +25,9 @@ def update_task(task_id: int, task: TaskUpdate, db: Session):
     db_existing_task=get_task(task_id,db)
     if not db_existing_task:
         return None
-    db_existing_task.title = task.title
-    db_existing_task.description = task.description
-    db_existing_task.priority = task.priority
-    db_existing_task.completed = task.completed
+    update_data=task.dict(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(db_existing_task, key, value)
     db.commit()
     db.refresh(db_existing_task)
     return db_existing_task
