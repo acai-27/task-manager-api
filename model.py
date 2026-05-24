@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, Integer, String, Boolean, Date
 from app.db import Base
 
 class Task(Base):
@@ -8,4 +8,6 @@ class Task(Base):
     description=Column(String)
     completed=Column(Boolean, default=False)
     priority=Column(String)
+    category=Column(String)
+    due_date=Column(Date)
 
